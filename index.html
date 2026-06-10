@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramon Rueda — Data Scientist</title>
+<meta name="description" content="Ramon Rueda · Data Scientist. Machine learning models, exploratory analysis, and data stories with real-world impact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060013;
+    --bg-2: #0d0224;
+    --cyan: #00fff5;
+    --magenta: #ff2bd6;
+    --purple: #9d4edd;
+    --yellow: #ffe66d;
+    --text: #d8d4f0;
+    --muted: #8a84b8;
+    --card: rgba(20, 8, 48, 0.75);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--magenta); color: var(--bg); }
+
+  /* ---------- CRT scanlines + vignette overlay ---------- */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px),
+      radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.45) 100%);
+  }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(6, 0, 19, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 255, 245, 0.2);
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--cyan);
+    text-decoration: none;
+    text-shadow: 0 0 10px var(--cyan);
+    letter-spacing: 2px;
+  }
+  .logo span { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    transition: color 0.25s, text-shadow 0.25s;
+  }
+  .nav-links a::before { content: '// '; color: var(--magenta); opacity: 0; transition: opacity 0.25s; }
+  .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 12px var(--cyan); }
+  .nav-links a:hover::before { opacity: 1; }
+
+  /* ---------- Hero ---------- */
+  header {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  /* synthwave sun */
+  .sun {
+    position: absolute;
+    bottom: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, var(--yellow) 0%, var(--magenta) 55%, var(--purple) 100%);
+    filter: blur(2px);
+    opacity: 0.5;
+    -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 26px, transparent 26px 34px);
+            mask-image: repeating-linear-gradient(0deg, #000 0 26px, transparent 26px 34px);
+    animation: sunPulse 6s ease-in-out infinite;
+  }
+  @keyframes sunPulse {
+    0%, 100% { opacity: 0.45; transform: translateX(-50%) scale(1); }
+    50%      { opacity: 0.6;  transform: translateX(-50%) scale(1.03); }
+  }
+
+  /* perspective grid floor */
+  .grid-floor {
+    position: absolute;
+    bottom: 0; left: -50%;
+    width: 200%;
+    height: 42%;
+    perspective: 480px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 35%);
+            mask-image: linear-gradient(180deg, transparent 0%, #000 35%);
+  }
+  .grid-floor::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255, 43, 214, 0.8) 2px, transparent 2px) 0 0 / 60px 100%,
+      linear-gradient(0deg, rgba(0, 255, 245, 0.7) 3px, transparent 3px) 0 0 / 100% 48px;
+    transform-origin: top center;
+    transform: rotateX(55deg);
+    animation: gridMove 1.4s linear infinite;
+  }
+  @keyframes gridMove { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 0 48px; } }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--cyan);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 8px var(--cyan);
+    animation: fadeDown 1s ease both;
+  }
+
+  h1.glitch {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.6rem, 8vw, 5.5rem);
+    letter-spacing: 4px;
+    color: #fff;
+    position: relative;
+    text-shadow:
+      0 0 10px var(--magenta),
+      0 0 30px var(--magenta),
+      0 0 60px rgba(255, 43, 214, 0.5);
+    animation: neonFlicker 4s linear infinite;
+  }
+  h1.glitch::before,
+  h1.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    opacity: 0.8;
+  }
+  h1.glitch::before {
+    color: var(--cyan);
+    z-index: -1;
+    animation: glitchShift 3s steps(2, end) infinite;
+  }
+  h1.glitch::after {
+    color: var(--magenta);
+    z-index: -2;
+    animation: glitchShift 2.7s steps(2, end) infinite reverse;
+  }
+  @keyframes glitchShift {
+    0%, 86%, 100% { transform: translate(0); clip-path: inset(0); }
+    88% { transform: translate(-4px, 2px); clip-path: inset(10% 0 60% 0); }
+    92% { transform: translate(4px, -2px); clip-path: inset(55% 0 15% 0); }
+    96% { transform: translate(-2px, 1px); clip-path: inset(30% 0 40% 0); }
+  }
+  @keyframes neonFlicker {
+    0%, 19%, 22%, 62%, 64%, 100% { opacity: 1; }
+    20%, 63% { opacity: 0.7; }
+    21% { opacity: 0.9; }
+  }
+
+  .typing-line {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    color: var(--text);
+    margin-top: 1.2rem;
+    min-height: 2em;
+  }
+  .typing-line .typed { color: var(--yellow); text-shadow: 0 0 12px rgba(255, 230, 109, 0.7); }
+  .cursor {
+    display: inline-block;
+    width: 0.6em; height: 1.15em;
+    background: var(--cyan);
+    vertical-align: text-bottom;
+    margin-left: 3px;
+    box-shadow: 0 0 10px var(--cyan);
+    animation: blink 0.8s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-sub {
+    max-width: 640px;
+    margin: 1.5rem auto 2.5rem;
+    color: var(--text);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    text-shadow: 0 0 6px rgba(6, 0, 19, 0.9), 0 0 14px rgba(6, 0, 19, 0.9);
+    animation: fadeUp 1.2s ease 0.4s both;
+  }
+
+  .btn-row { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 1.2s ease 0.6s both; }
+
+  .btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: -1;
+  }
+  .btn:hover { color: var(--bg); box-shadow: 0 0 25px var(--cyan), inset 0 0 12px rgba(0,255,245,0.3); transform: translateY(-3px); }
+  .btn:hover::before { transform: scaleX(1); }
+  .btn.magenta { border-color: var(--magenta); color: var(--magenta); }
+  .btn.magenta::before { background: var(--magenta); }
+  .btn.magenta:hover { color: var(--bg); box-shadow: 0 0 25px var(--magenta), inset 0 0 12px rgba(255,43,214,0.3); }
+
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(30px); }  to { opacity: 1; transform: none; } }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 3px;
+    animation: bob 2s ease-in-out infinite;
+    z-index: 2;
+  }
+  @keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
+
+  /* ---------- Sections ---------- */
+  section { max-width: 1100px; margin: 0 auto; padding: 6rem 2rem; }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    color: #fff;
+  }
+  .section-title::before { content: '> '; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 90px; height: 3px;
+    margin-top: 0.8rem;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    box-shadow: 0 0 12px var(--magenta);
+  }
+
+  /* scroll reveal */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal:nth-child(2) { transition-delay: 0.12s; }
+  .reveal:nth-child(3) { transition-delay: 0.24s; }
+
+  /* ---------- About ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: start; }
+  .about-text p { color: var(--muted); line-height: 1.8; margin-bottom: 1.2rem; font-size: 1.1rem; }
+  .about-text strong { color: var(--cyan); font-weight: 600; }
+
+  .terminal {
+    background: var(--card);
+    border: 1px solid rgba(157, 78, 221, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(157, 78, 221, 0.25);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+  }
+  .terminal-bar {
+    background: rgba(157, 78, 221, 0.25);
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .terminal-bar i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .terminal-bar i:nth-child(1) { background: var(--magenta); box-shadow: 0 0 6px var(--magenta); }
+  .terminal-bar i:nth-child(2) { background: var(--yellow);  box-shadow: 0 0 6px var(--yellow); }
+  .terminal-bar i:nth-child(3) { background: var(--cyan);    box-shadow: 0 0 6px var(--cyan); }
+  .terminal-bar span { margin-left: 0.5rem; color: var(--muted); font-size: 0.78rem; }
+  .terminal-body { padding: 1.2rem; line-height: 1.9; }
+  .terminal-body .p  { color: var(--magenta); }
+  .terminal-body .k  { color: var(--cyan); }
+  .terminal-body .v  { color: var(--yellow); }
+  .terminal-body .c  { color: var(--muted); }
+
+  /* skills */
+  .skills { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.5rem; }
+  .chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--cyan);
+    border-radius: 100px;
+    color: var(--cyan);
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .chip:hover {
+    background: var(--cyan);
+    color: var(--bg);
+    box-shadow: 0 0 18px var(--cyan);
+    transform: translateY(-2px);
+  }
+
+  /* ---------- Stats ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .stat {
+    padding: 2rem 1rem;
+    background: var(--card);
+    border: 1px solid rgba(0, 255, 245, 0.25);
+    border-radius: 8px;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .stat:hover { transform: translateY(-6px); border-color: var(--cyan); box-shadow: 0 0 25px rgba(0, 255, 245, 0.35); }
+  .stat .num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 15px var(--cyan);
+  }
+  .stat .num .suffix { color: var(--magenta); text-shadow: 0 0 15px var(--magenta); }
+  .stat .label {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  /* ---------- Projects ---------- */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(255, 43, 214, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+    background-size: 200% 100%;
+    animation: borderFlow 3s linear infinite;
+  }
+  @keyframes borderFlow { to { background-position: 200% 0; } }
+  .card::after {
+    content: '';
+    position: absolute;
+    top: -60%; left: -60%;
+    width: 60%; height: 220%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.07), transparent);
+    transform: rotate(20deg) translateX(-200%);
+    transition: transform 0.7s ease;
+    pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-10px) scale(1.015);
+    border-color: var(--magenta);
+    box-shadow: 0 12px 45px rgba(255, 43, 214, 0.3), 0 0 25px rgba(0, 255, 245, 0.15);
+  }
+  .card:hover::after { transform: rotate(20deg) translateX(420%); }
+
+  .card .proj-id {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--purple);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+  }
+  .card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+  }
+  .card p { color: var(--muted); line-height: 1.7; flex: 1; margin-bottom: 1.3rem; }
+
+  .metric {
+    font-family: 'Share Tech Mono', monospace;
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--yellow);
+    border: 1px dashed rgba(255, 230, 109, 0.5);
+    border-radius: 6px;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 1.3rem;
+    text-shadow: 0 0 8px rgba(255, 230, 109, 0.6);
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .tags span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--cyan);
+    background: rgba(0, 255, 245, 0.08);
+    border: 1px solid rgba(0, 255, 245, 0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .card a.repo-link {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--magenta);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: text-shadow 0.25s, letter-spacing 0.25s;
+  }
+  .card a.repo-link:hover { text-shadow: 0 0 14px var(--magenta); letter-spacing: 3.5px; }
+
+  .card .repo-link.soon {
+    color: var(--muted);
+    cursor: default;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .wip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--yellow);
+    letter-spacing: 1px;
+    margin-left: 0.6rem;
+    text-shadow: 0 0 8px rgba(255, 230, 109, 0.6);
+    animation: wipBlink 1.6s ease-in-out infinite;
+  }
+  @keyframes wipBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+  /* ---------- Contact ---------- */
+  .contact-box { text-align: center; }
+  .contact-box p { color: var(--muted); max-width: 540px; margin: 0 auto 2.5rem; font-size: 1.15rem; line-height: 1.7; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid rgba(0, 255, 245, 0.15);
+    padding: 2rem;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer .heart { color: var(--magenta); text-shadow: 0 0 8px var(--magenta); }
+
+  @media (max-width: 760px) {
+    .nav-links { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.2rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#">RR<span>.</span>AI</a>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<header>
+  <div class="sun"></div>
+  <div class="grid-floor"></div>
+  <div class="hero-content">
+    <p class="hero-tag">ML · DS · AI</p>
+    <h1 class="glitch" data-text="RAMON RUEDA">RAMON RUEDA</h1>
+    <p class="typing-line">&gt; <span class="typed" id="typed"></span><span class="cursor"></span></p>
+    <p class="hero-sub">
+      Turning raw data into actionable intelligence. I build machine learning models,
+      perform deep exploratory analysis, and craft clear data stories — combining
+      statistical rigor with real-world impact.
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="#projects">View Projects</a>
+      <a class="btn magenta" href="https://github.com/RayRCol" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <div class="scroll-hint">▼ SCROLL ▼</div>
+</header>
+
+<section id="about">
+  <h2 class="section-title reveal">About Me</h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        I'm a <strong>Data Scientist</strong> focused on transforming messy, real-world
+        datasets into models and insights that drive decisions. My work spans
+        <strong>regression modeling</strong>, <strong>exploratory data analysis</strong>,
+        and <strong>customer analytics</strong>.
+      </p>
+      <p>
+        From predicting used-car prices with Random Forests to dissecting the revenue
+        drivers of a NYC food-delivery platform, I care about one thing: making the
+        data tell a story that holds up to statistical scrutiny.
+      </p>
+      <div class="skills">
+        <span class="chip">Python</span>
+        <span class="chip">pandas</span>
+        <span class="chip">NumPy</span>
+        <span class="chip">scikit-learn</span>
+        <span class="chip">Matplotlib</span>
+        <span class="chip">Seaborn</span>
+        <span class="chip">Jupyter</span>
+        <span class="chip">SQL</span>
+        <span class="chip">Statistics</span>
+        <span class="chip">Machine Learning</span>
+      </div>
+    </div>
+    <div class="terminal reveal">
+      <div class="terminal-bar"><i></i><i></i><i></i><span>ramon@datasci: ~/profile</span></div>
+      <div class="terminal-body">
+        <div><span class="p">$</span> <span class="k">whoami</span></div>
+        <div><span class="v">ramon_rueda</span> <span class="c"># data scientist</span></div>
+        <div><span class="p">$</span> <span class="k">cat</span> stack.txt</div>
+        <div><span class="v">["python", "ml", "eda", "stats"]</span></div>
+        <div><span class="p">$</span> <span class="k">model.score</span>(X_test, y_test)</div>
+        <div><span class="v">0.94</span> <span class="c"># random forest, used cars</span></div>
+        <div><span class="p">$</span> <span class="k">status</span> --current</div>
+        <div><span class="v">open_to_work=True</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats">
+  <div class="stats">
+    <div class="stat reveal">
+      <div class="num"><span class="counter" data-target="9">0</span><span class="suffix">+</span></div>
+      <div class="label">ML Projects</div>
+    </div>
+    <div class="stat reveal">
+      <div class="num"><span class="counter" data-target="94">0</span><span class="suffix">%</span></div>
+      <div class="label">Best Model R²</div>
+    </div>
+    <div class="stat reveal">
+      <div class="num"><span class="counter" data-target="7900">0</span><span class="suffix">+</span></div>
+      <div class="label">Records Analyzed</div>
+    </div>
+    <div class="stat reveal">
+      <div class="num"><span class="counter" data-target="10">0</span><span class="suffix">+</span></div>
+      <div class="label">Tools Mastered</div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <h2 class="section-title reveal">Projects</h2>
+  <div class="projects-grid">
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_01 ]</div>
+      <h3>Used Cars Price Prediction</h3>
+      <div class="metric">R² = 0.94 · Random Forest</div>
+      <p>
+        Regression model that predicts used-car prices from 6,015 vehicle listings
+        across Indian cities. Full pipeline: cleaning, feature engineering,
+        model comparison, and tuning — Random Forest came out on top.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>Random Forest</span><span>scikit-learn</span><span>Feature Engineering</span>
+      </div>
+      <a class="repo-link" href="https://github.com/RayRCol/used-cars-price-prediction" target="_blank" rel="noopener">View Repo →</a>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_02 ]</div>
+      <h3>Boston House Price Prediction</h3>
+      <div class="metric">R² = 0.77 · Linear Regression</div>
+      <p>
+        Linear regression model forecasting Boston housing prices, with rigorous
+        testing of regression assumptions — linearity, multicollinearity,
+        homoscedasticity, and normality of residuals.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>Linear Regression</span><span>statsmodels</span><span>Assumption Testing</span>
+      </div>
+      <a class="repo-link" href="https://github.com/RayRCol/boston-house-price-prediction" target="_blank" rel="noopener">View Repo →</a>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_03 ]</div>
+      <h3>FoodHub Data Analysis</h3>
+      <div class="metric">EDA · NYC Food Delivery</div>
+      <p>
+        Exploratory analysis of a New York food-delivery platform: order patterns,
+        delivery performance, and revenue drivers — translated into actionable
+        business recommendations.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>pandas</span><span>Seaborn</span><span>Business Insights</span>
+      </div>
+      <a class="repo-link" href="https://github.com/RayRCol/foodhub-data-analysis" target="_blank" rel="noopener">View Repo →</a>
+    </article>
+
+    <!-- Para activar el enlace de un proyecto en progreso:
+         reemplaza  <span class="repo-link soon">Repo Coming Soon</span>
+         por        <a class="repo-link" href="URL_DEL_REPO" target="_blank" rel="noopener">View Repo →</a>
+         y borra el <span class="wip">● IN PROGRESS</span> -->
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_04 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Marketing Campaign Analysis</h3>
+      <div class="metric">Unsupervised Learning · Segmentation</div>
+      <p>
+        Capstone project on customer segmentation for marketing campaigns:
+        clustering customer profiles, visualizing behavioral patterns, and
+        identifying high-ROI target groups for personalized campaigns.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>K-Means</span><span>PCA</span><span>Data Visualization</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_05 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Loan Default Prediction</h3>
+      <div class="metric">Practical Data Science · Classification</div>
+      <p>
+        Capstone project building a classification model to predict loan
+        defaults — handling imbalanced data, comparing classifiers, and
+        optimizing for the metrics that matter to lenders.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>Classification</span><span>scikit-learn</span><span>Imbalanced Data</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_06 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Malaria Detection</h3>
+      <div class="metric">Deep Learning · Computer Vision</div>
+      <p>
+        Capstone project training convolutional neural networks to detect
+        malaria-infected blood cells from microscopy images — model design,
+        augmentation, and performance evaluation.
+      </p>
+      <div class="tags">
+        <span>TensorFlow</span><span>Keras</span><span>CNN</span><span>Image Classification</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_07 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Facial Emotion Detection</h3>
+      <div class="metric">Deep Learning · Computer Vision</div>
+      <p>
+        Capstone project on recognizing human emotions from facial
+        expressions using deep neural networks — from data preprocessing
+        to CNN architectures and transfer learning.
+      </p>
+      <div class="tags">
+        <span>TensorFlow</span><span>Keras</span><span>CNN</span><span>Transfer Learning</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_08 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Music Recommendation System</h3>
+      <div class="metric">Recommendation Systems</div>
+      <p>
+        Capstone project building a music recommender: collaborative
+        filtering, matrix factorization, and ranking-based approaches to
+        suggest the right song to the right listener.
+      </p>
+      <div class="tags">
+        <span>Python</span><span>Collaborative Filtering</span><span>Matrix Factorization</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+    <article class="card reveal">
+      <div class="proj-id">[ PROJECT_09 ]<span class="wip">● IN PROGRESS</span></div>
+      <h3>Real-Time Retail Feedback Intelligence</h3>
+      <div class="metric">Generative AI · NLP</div>
+      <p>
+        Capstone project applying generative AI to retail customer
+        feedback — extracting sentiment, themes, and actionable insights
+        from reviews in real time with LLM-powered pipelines.
+      </p>
+      <div class="tags">
+        <span>Generative AI</span><span>LLMs</span><span>NLP</span><span>Prompt Engineering</span>
+      </div>
+      <span class="repo-link soon">Repo Coming Soon</span>
+    </article>
+
+  </div>
+</section>
+
+<section id="contact">
+  <h2 class="section-title reveal">Contact</h2>
+  <div class="contact-box reveal">
+    <p>
+      Interested in working together, or just want to talk data?
+      My inbox is always open.
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="mailto:ramonmit0908@gmail.com">Send Email</a>
+      <a class="btn magenta" href="https://github.com/RayRCol" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Ramon Rueda · built with <span class="heart">♥</span> and neon</p>
+</footer>
+
+<script>
+  // ---------- typing effect ----------
+  const words = ['Machine Learning', 'Data Science', 'Exploratory Analysis', 'Predictive Modeling'];
+  const typedEl = document.getElementById('typed');
+  let wordIdx = 0, charIdx = 0, deleting = false;
+
+  function type() {
+    const word = words[wordIdx];
+    typedEl.textContent = word.slice(0, charIdx);
+    if (!deleting) {
+      if (charIdx < word.length) { charIdx++; setTimeout(type, 75); }
+      else { deleting = true; setTimeout(type, 1800); }
+    } else {
+      if (charIdx > 0) { charIdx--; setTimeout(type, 35); }
+      else { deleting = false; wordIdx = (wordIdx + 1) % words.length; setTimeout(type, 400); }
+    }
+  }
+  type();
+
+  // ---------- scroll reveal ----------
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ---------- animated counters ----------
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      counterObserver.unobserve(e.target);
+      const el = e.target;
+      const target = +el.dataset.target;
+      const duration = 1600;
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased).toLocaleString();
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+</script>
+
+</body>
+</html>
