@@ -353,6 +353,45 @@
     transform: translateY(-2px);
   }
 
+  /* ---------- Education ---------- */
+  .education-card {
+    background: var(--card);
+    border: 1px solid rgba(0, 255, 245, 0.25);
+    border-radius: 10px;
+    padding: 2.5rem;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .education-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--purple));
+    background-size: 200% 100%;
+    animation: borderFlow 3s linear infinite;
+  }
+  .education-card:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 25px rgba(0, 255, 245, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .stat-box {
+    padding: 1rem;
+    background: rgba(0, 255, 245, 0.05);
+    border: 1px solid rgba(0, 255, 245, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .stat-box:hover {
+    background: rgba(0, 255, 245, 0.1);
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(0, 255, 245, 0.15);
+  }
+
   /* ---------- Stats ---------- */
   .stats {
     display: grid;
@@ -668,6 +707,50 @@
         <div><span class="v">0.94</span> <span class="c"># random forest, used cars</span></div>
         <div><span class="p">$</span> <span class="k">status</span> --current</div>
         <div><span class="v">open_to_work=True</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education" class="reveal">
+  <h2 class="section-title reveal">Education</h2>
+  <div style="max-width: 900px; margin: 0 auto;">
+    <div class="education-card">
+      <div style="display: flex; align-items: flex-start; gap: 2rem;">
+        <div style="flex: 1;">
+          <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">
+            Applied AI & Data Science
+          </h3>
+          <p style="color: var(--cyan); font-weight: 600; margin-bottom: 0.8rem; font-size: 1rem;">
+            MIT Sloan School of Management • Professional Education
+          </p>
+          <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.7;">
+            Specialized program focused on <strong style="color: var(--text);">Data Analysis & Machine Learning</strong>.
+            Building expertise in statistical modeling, predictive analytics, and ML algorithms to extract actionable insights
+            from complex datasets. Current coursework emphasizes regression models, neural networks, and practical data science applications.
+          </p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="stat-box">
+              <div style="color: var(--cyan); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem;">Nov 2025</div>
+              <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Started</div>
+            </div>
+            <div class="stat-box">
+              <div style="color: var(--magenta); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem;">In Progress</div>
+              <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Status</div>
+            </div>
+          </div>
+
+          <div>
+            <p style="color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.8rem;">Core Coursework</p>
+            <div class="skills" style="gap: 0.6rem;">
+              <span class="chip">Neural Networks</span>
+              <span class="chip">Regression Models</span>
+              <span class="chip">Statistical Analysis</span>
+              <span class="chip">Predictive Modeling</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
