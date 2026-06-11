@@ -385,8 +385,80 @@
     margin-top: 0.5rem;
   }
 
-  /* ---------- Projects ---------- */
-  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+  /* ---------- Projects Carousel ---------- */
+  .carousel-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .projects-grid {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    gap: 2rem;
+  }
+
+  .card {
+    flex: 0 0 calc((100% - 4rem) / 3);
+    min-width: 280px;
+  }
+
+  @media (max-width: 760px) {
+    .card { flex: 0 0 calc(100% - 2rem); }
+  }
+
+  /* Carousel controls */
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    width: 50px;
+    height: 50px;
+    border: 2px solid var(--cyan);
+    background: rgba(6, 0, 19, 0.85);
+    color: var(--cyan);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+  .carousel-btn:hover {
+    background: var(--cyan);
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--cyan);
+  }
+  .carousel-btn.prev { left: 1.5rem; }
+  .carousel-btn.next { right: 1.5rem; }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--magenta);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .dot.active {
+    background: var(--magenta);
+    box-shadow: 0 0 12px var(--magenta);
+    width: 28px;
+    border-radius: 5px;
+  }
+  .dot:hover { box-shadow: 0 0 12px var(--magenta); }
 
   .card {
     background: var(--card);
@@ -624,7 +696,9 @@
 
 <section id="projects">
   <h2 class="section-title reveal">Projects</h2>
-  <div class="projects-grid">
+  <div class="carousel-container">
+    <button class="carousel-btn prev" aria-label="Previous project">‹</button>
+    <div class="projects-grid" id="projectsCarousel">
 
     <article class="card reveal">
       <div class="proj-id">[ PROJECT_01 ]</div>
@@ -781,7 +855,11 @@
       <span class="repo-link soon">Repo Coming Soon</span>
     </article>
 
+    </div>
+    <button class="carousel-btn next" aria-label="Next project">›</button>
   </div>
+
+  <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
 <section id="contact">
@@ -846,6 +924,82 @@
     });
   }, { threshold: 0.6 });
   document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+  // ---------- carousel ----------
+  const carousel = document.getElementById('projectsCarousel');
+  const prevBtn = document.querySelector('.carousel-btn.prev');
+  const nextBtn = document.querySelector('.carousel-btn.next');
+  const dotsContainer = document.getElementById('carouselDots');
+  const cards = document.querySelectorAll('#projectsCarousel .card');
+  let currentSlide = 0;
+  let slideWidth = 0;
+  let cardsPerPage = 3;
+
+  // Initialize carousel
+  function initCarousel() {
+    if (cards[0].offsetWidth > 0) {
+      // Determine cards per page based on screen width
+      if (window.innerWidth <= 760) cardsPerPage = 1;
+      else cardsPerPage = 3;
+
+      const cardWidth = cards[0].offsetWidth;
+      const gap = 32; // gap in CSS
+      slideWidth = cardWidth + gap; // width of one card + gap
+      const totalSlides = Math.ceil(cards.length / cardsPerPage);
+
+      // Clear existing dots
+      dotsContainer.innerHTML = '';
+
+      // Create dots for each page
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = `dot ${i === 0 ? 'active' : ''}`;
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+      }
+      updateCarousel();
+    } else {
+      setTimeout(initCarousel, 100);
+    }
+  }
+
+  function updateCarousel() {
+    if (slideWidth === 0) return;
+    // Each page shows cardsPerPage cards
+    // The width of one page = (slideWidth * cardsPerPage) - gap between last card and next slide
+    const pageWidth = slideWidth * cardsPerPage - 32;
+    const offset = -currentSlide * pageWidth;
+    carousel.style.transform = `translateX(${offset}px)`;
+
+    const totalSlides = Math.ceil(cards.length / cardsPerPage);
+    document.querySelectorAll('.dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  function goToSlide(slideIndex) {
+    const totalSlides = Math.ceil(cards.length / cardsPerPage);
+    currentSlide = (slideIndex + totalSlides) % totalSlides;
+    updateCarousel();
+  }
+
+  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+  nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+    if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+  });
+
+  // Auto-scroll on scroll wheel (optional)
+  carousel.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (e.deltaX > 0 || e.deltaY > 0) goToSlide(currentIndex + 1);
+    else goToSlide(currentIndex - 1);
+  }, { passive: false });
+
+  initCarousel();
 </script>
 
 </body>
