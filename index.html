@@ -448,24 +448,7 @@
 
   /* Carousel controls */
   .carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: 1.8rem;
-    width: 50px;
-    height: 50px;
-    border: 2px solid var(--cyan);
-    background: rgba(6, 0, 19, 0.85);
-    color: var(--cyan);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    border-radius: 8px;
+    display: none;
   }
   .carousel-btn:hover {
     background: var(--cyan);
@@ -736,7 +719,7 @@
               <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Started</div>
             </div>
             <div class="stat-box">
-              <div style="color: var(--magenta); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem;">In Progress</div>
+              <div style="color: var(--cyan); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem;">Completed</div>
               <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Status</div>
             </div>
           </div>
@@ -1066,21 +1049,89 @@
     updateCarousel();
   }
 
-  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
-  nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+  // Drag/Swipe functionality
+  let isDragging = false;
+  let dragStart = 0;
+  let currentTranslate = 0;
+  let prevTranslate = 0;
+
+  carousel.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragStart = e.clientX;
+    carousel.style.cursor = 'grabbing';
+  });
+
+  carousel.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const now = e.clientX;
+    const walk = (dragStart - now) * 0.5;
+    currentTranslate = prevTranslate + walk;
+    carousel.style.transform = `translateX(${-currentSlide * slideWidth * cardsPerPage - 32 + currentTranslate}px)`;
+    carousel.style.transition = 'none';
+  });
+
+  carousel.addEventListener('mouseup', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    carousel.style.cursor = 'grab';
+    const dragDistance = dragStart - e.clientX;
+    const threshold = 50;
+    if (Math.abs(dragDistance) > threshold) {
+      if (dragDistance > 0) goToSlide(currentSlide + 1);
+      else goToSlide(currentSlide - 1);
+    } else {
+      updateCarousel();
+    }
+    prevTranslate = currentTranslate;
+    currentTranslate = 0;
+  });
+
+  carousel.addEventListener('mouseleave', () => {
+    if (isDragging) {
+      isDragging = false;
+      carousel.style.cursor = 'grab';
+      updateCarousel();
+    }
+  });
+
+  // Touch events for mobile
+  let touchStart = 0;
+  let touchCurrent = 0;
+
+  carousel.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    touchStart = e.touches[0].clientX;
+  }, { passive: true });
+
+  carousel.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    touchCurrent = e.touches[0].clientX;
+    const walk = (touchStart - touchCurrent) * 0.5;
+    currentTranslate = prevTranslate + walk;
+    carousel.style.transform = `translateX(${-currentSlide * slideWidth * cardsPerPage - 32 + currentTranslate}px)`;
+    carousel.style.transition = 'none';
+  }, { passive: true });
+
+  carousel.addEventListener('touchend', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    const dragDistance = touchStart - touchCurrent;
+    const threshold = 30;
+    if (Math.abs(dragDistance) > threshold) {
+      if (dragDistance > 0) goToSlide(currentSlide + 1);
+      else goToSlide(currentSlide - 1);
+    } else {
+      updateCarousel();
+    }
+    prevTranslate = currentTranslate;
+    currentTranslate = 0;
+  }, { passive: true });
 
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
-    if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+    if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+    if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
   });
-
-  // Auto-scroll on scroll wheel (optional)
-  carousel.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    if (e.deltaX > 0 || e.deltaY > 0) goToSlide(currentIndex + 1);
-    else goToSlide(currentIndex - 1);
-  }, { passive: false });
 
   initCarousel();
 </script>
